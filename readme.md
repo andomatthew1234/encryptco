@@ -21,9 +21,18 @@ Run the file. Enter the text. Select a key. Done.
    - Exit - exit the app.
 Select the option you want. Then enter the text you want to encrypt/decrypt. Choose a key between 0-10000000. Make sure only you and your friend knows this key. Press enter and your all done!
 
-## 🚀 Installation
+## ⚡ Lightning installation (seriously a 2yo could do this)
 
-**Fast setup (recomended for most users)**
+
+1. Download  Encrypto by clicking the Code button at the top of the page > download .zip
+2. Extract Encryptco by rightclicking the folder you downloaded > Extract all
+3. Double click on setup (or setup.bat). Our installer will make sure Python is installed (and install it if it isn't), download all required files, and make sure you're ready to go.
+4. Run Encryptco by double-clicking app.py (you may have to select 'Python' to run the app).
+
+
+## ... Other installation types
+
+**Medium setup (try this if Lightning doesn't work)**
 1. Download  Encrypto by clicking the Code button at the top of the page > download .zip
 2. Extract Encryptco by rightclicking the folder you downloaded > Extract all
 3. Double click on setup (or setup.bat). Our installer will make sure Python is installed (and install it if it isn't), download all required files, and make sure you're ready to go.

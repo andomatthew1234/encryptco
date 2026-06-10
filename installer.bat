@@ -1,79 +1,103 @@
 @echo off
 setlocal EnableDelayedExpansion
-title EncryptCo Release Installer
+
+title EncryptCo Installer
 color 0A
 
-:: ===============================
+:: ==========================
 :: CONFIG
-:: ===============================
+:: ==========================
 set "INSTALL_DIR=%USERPROFILE%\EncryptCo"
 set "ZIP_FILE=%TEMP%\encryptco_release.zip"
-set "EXTRACT_DIR=%USERPROFILE%\EncryptCo"
 
-:: Your GitHub Releases ZIP (EDITED TO MATCH YOUR LINK)
+:: CHANGE THIS TO YOUR ACTUAL RELEASE ASSET
 set "URL=https://github.com/andomatthew1234/encryptco/releases/latest/download/encryptco.zip"
 
-:: ===============================
-:: HEADER
-:: ===============================
 cls
 echo ==========================================
-echo            ENCRYPTCO INSTALLER
+echo           ENCRYPTCO INSTALLER
 echo ==========================================
 echo.
 echo Downloading latest release...
 echo.
 
-:: ===============================
-:: DOWNLOAD RELEASE
-:: ===============================
-powershell -Command ^
-"Invoke-WebRequest -Uri '%URL%' -OutFile '%ZIP_FILE%'"
+:: ==========================
+:: DOWNLOAD
+:: ==========================
+powershell -Command "Invoke-WebRequest -Uri '%URL%' -OutFile '%ZIP_FILE%'"
 
 if not exist "%ZIP_FILE%" (
-    echo ❌ We couldn't find the release file. Please check your internet connection and try again.
+    echo.
+    echo [ERROR] Download failed.
     pause
-    exit
+    exit /b
 )
 
-echo ✔ Download complete
+echo [OK] Download complete.
 echo.
+
+:: ==========================
+:: CLEAN OLD INSTALL
+:: ==========================
+if exist "%INSTALL_DIR%" (
+    echo Removing previous installation...
+    rmdir /s /q "%INSTALL_DIR%"
+)
+
+mkdir "%INSTALL_DIR%"
+
+:: ==========================
+:: EXTRACT
+:: ==========================
 echo Extracting files...
 
-:: ===============================
-:: EXTRACT ZIP
-:: ===============================
-powershell -Command ^
-"Expand-Archive -Force '%ZIP_FILE%' '%EXTRACT_DIR%'"
+powershell -Command "Expand-Archive -Force '%ZIP_FILE%' '%INSTALL_DIR%'"
 
-if %errorlevel% neq 0 (
-    echo ❌ We couldn't extract the release file. Please check the ZIP file and try again.
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Extraction failed.
     pause
-    exit
+    exit /b
 )
 
-echo ✔ Extraction of Encrypto complete
+echo [OK] Extraction complete.
 echo.
 
-:: ===============================
-:: FIND EXTRACTED FOLDER (GitHub creates folder name)
-:: ===============================
-for /d %%F in ("%EXTRACT_DIR%\*") do (
-    set "APP_DIR=%%F"
-    goto found
+:: ==========================
+:: FIND setup.bat
+:: ==========================
+echo Searching for setup.bat...
+set "FOUND="
+
+for /r "%INSTALL_DIR%" %%F in (setup.bat) do (
+    set "FOUND=%%F"
+    goto launch
 )
 
-:found
-cd /d "%APP_DIR%"
+echo.
+echo [ERROR] setup.bat was not found.
+echo.
+echo Make sure your GitHub Release ZIP contains:
+echo.
+echo     setup.bat
+echo     run.bat
+echo     app.py
+echo.
+pause
+exit /b
 
-echo → Starting setup...
+:: ==========================
+:: RUN SETUP
+:: ==========================
+:launch
+
+echo [OK] Found setup.bat
+echo [INFO] Starting setup...
 echo.
 
-if exist setup.bat (
-    call setup.bat
-) else (
-    echo ❌ Error: setup.bat file not found
-)
+cd /d "%~dp0"
+
+call "!FOUND!"
 
 echo.
 echo ==========================================
